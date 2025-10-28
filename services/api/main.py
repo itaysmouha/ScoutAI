@@ -11,9 +11,6 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True,
 app.include_router(uploads.router)
 app.include_router(jobs.router)
 
-app.get("/")
-
-
-
-def root():
-    return {"Hello": "World"}
+@app.get("/")
+def index():
+    return {"message": "ScoutAI API is running", "docs": "/docs"}
