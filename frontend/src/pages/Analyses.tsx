@@ -1,4 +1,5 @@
 import { useEffect, useState, MouseEvent } from "react";
+import { Link } from "react-router-dom";
 import { listJobs } from "../api";
 import JobStatus from "../components/JobStatus";
 import type { Job } from "../types";
@@ -105,7 +106,10 @@ export default function Analyses() {
                     >
                       <td className="px-3 py-2 align-top">
                         <div className="font-mono text-xs text-gray-800 truncate">
-                          {job.jobId}
+                          <Link to={`/jobs/${job.jobId}`} className="text-blue-600 hover:underline"
+                          onClick={(e) => e.stopPropagation()}>
+                            {job.jobId}
+                          </Link>
                         </div>
                         <div className="text-xs text-gray-500 truncate">
                           {job.s3KeyInput}
