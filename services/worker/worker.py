@@ -79,12 +79,34 @@ def process(job):
     # 2️⃣ Simulate processing time (replace with YOLO inference later)
     time.sleep(2)
 
-    # 3️⃣ Create dummy output data (to be replaced with real results)
+    # 3️⃣ Create output data (to be replaced with real results)
     metrics = {
-        "jobId": job_id,
-        "summary": {"playersDetected": 0, "frames": 0},  # placeholder stats
-        "generatedAt": now_iso()
-    }
+    "jobId": job_id,
+    "generatedAt": now_iso(),
+    "summary": {
+        "playersDetected": 22,
+        "frames": 3450,
+        "durationSeconds": 115.0,
+    },
+    "teams": {
+        "home": {
+            "name": "Home FC",
+            "shots": 5,
+            "xg": 0.9,
+            "possessionPercent": 54
+        },
+        "away": {
+            "name": "Away United",
+            "shots": 3,
+            "xg": 0.6,
+            "possessionPercent": 46
+        }
+    },
+    "topPlayers": [
+        {"name": "Player 10", "distanceKm": 1.8, "topSpeedKmh": 28.4, "touches": 24},
+        {"name": "Player 8", "distanceKm": 1.4, "topSpeedKmh": 27.1, "touches": 18}
+    ]
+}
 
     # Define output file paths in S3
     metrics_key = f"metrics/{job_id}.json"  # metrics JSON file
