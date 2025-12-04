@@ -1,56 +1,68 @@
-// src/pages/Analyses.jsx
-import { useEffect, useState } from "react";
+import { useEffect, useState, MouseEvent } from "react";
 import { listJobs } from "../api";
 import JobStatus from "../components/JobStatus";
+import type { Job } from "../types";
 
 const DEMO_USER_ID = "user-42"; // same as in createJob for now
 
 export default function Analyses() {
-  const [jobs, setJobs] = useState([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
   const [selectedJobId, setSelectedJobId] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      try {
-        setLoading(true);
-        setError("");
-        const data = await listJobs(DEMO_USER_ID);
-        if (!cancelled) {
-          setJobs(data);
-          if (data.length > 0 && !selectedJobId) {
-            setSelectedJobId(data[0].jobId);
-          }
-        }
-      } catch (e) {
-        if (!cancelled) {
-          setError(e?.message ?? "Failed to load jobs");
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
+  async function loadJobs() {
+    try {
+      setLoading(true);
+      setError("");
+      const data = await listJobs(DEMO_USER_ID);
+      setJobs(data);
+      if (data.length > 0 && !selectedJobId) {
+        setSelectedJobId(data[0].jobId);
       }
+    } catch (e) {
+      setError((e as Error)?.message ?? "Failed to load jobs");
+    } finally {
+      setLoading(false);
     }
+  }
 
-    load();
-    return () => {
-      cancelled = true;
-    };
+  useEffect(() => {
+    loadJobs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <div className="grid gap-6 md:grid-cols-5">
       {/* Left: jobs table */}
       <section className="md:col-span-2 space-y-3">
-        <div>
-          <h1 className="text-xl font-semibold">My Analyses</h1>
-          <p className="text-sm text-gray-600">
-            History of your uploaded clips and their analysis status.
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-semibold">My Analyses</h1>
+            <p className="text-sm text-gray-600">
+              History of your uploaded clips and their analysis status.
+            </p>
+          </div>
+          <button
+            onClick={loadJobs}
+            disabled={loading}
+            style={{
+              padding: "8px 16px",
+              fontSize: "14px",
+              fontWeight: 600,
+              color: "white",
+              background: loading ? "#9ca3af" : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              border: "none",
+              borderRadius: "8px",
+              cursor: loading ? "not-allowed" : "pointer",
+              boxShadow: loading ? "none" : "0 2px 8px rgba(102, 126, 234, 0.3)",
+              transition: "all 0.2s ease",
+            }}
+            onMouseEnter={(e: MouseEvent<HTMLButtonElement>) => !loading && ((e.target as HTMLButtonElement).style.transform = "translateY(-1px)")}
+            onMouseLeave={(e: MouseEvent<HTMLButtonElement>) => ((e.target as HTMLButtonElement).style.transform = "translateY(0)")}
+          >
+            {loading ? "⟳ Refreshing…" : "↻ Refresh"}
+          </button>
         </div>
 
         {loading && <div className="text-sm text-gray-600">Loading jobs…</div>}

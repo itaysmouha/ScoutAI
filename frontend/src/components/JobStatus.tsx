@@ -1,10 +1,22 @@
-// frontend/src/components/JobStatus.jsx
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { getJob, getJobOutputUrl } from "../api";
-import MetricsDashboard from "./MetricsDashboard";
+import MetricsDashboard from "./MetricsDashboard.tsx";
+import type { Job } from "../types";
 
-export default function JobStatus({ jobId, pollMs = 2000, onDone }) {
-  const [job, setJob] = useState(null);
+interface JobStatusProps {
+  jobId: string;
+  pollMs?: number;
+  onDone?: (job: Job) => void;
+}
+
+interface ProgressInfo {
+  percent: number;
+  text: string;
+}
+
+export default function JobStatus({ jobId, pollMs = 2000, onDone }: JobStatusProps) {
+  const [job, setJob] = useState<Job | null>(null);
   const [error, setError] = useState("");
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState("");
@@ -13,7 +25,7 @@ export default function JobStatus({ jobId, pollMs = 2000, onDone }) {
     if (!jobId) return;
 
     let cancelled = false;
-    let intervalId = null;
+    let intervalId: NodeJS.Timeout | null = null;
 
     async function poll() {
       try {
@@ -28,7 +40,7 @@ export default function JobStatus({ jobId, pollMs = 2000, onDone }) {
           }
         }
       } catch (e) {
-        if (!cancelled) setError(e?.message ?? String(e));
+        if (!cancelled) setError((e as Error)?.message ?? String(e));
       }
     }
 
@@ -54,7 +66,7 @@ export default function JobStatus({ jobId, pollMs = 2000, onDone }) {
         setDownloadError("No output URL returned from server.");
       }
     } catch (e) {
-      setDownloadError(e?.message ?? "Failed to fetch output URL");
+      setDownloadError((e as Error)?.message ?? "Failed to fetch output URL");
     } finally {
       setDownloading(false);
     }
@@ -74,7 +86,7 @@ export default function JobStatus({ jobId, pollMs = 2000, onDone }) {
           <div>
             <h3 style={{ margin: 0 }}>Analysis Status</h3>
             <div className="job-subtitle">
-              Job <code>{job.jobId}</code>
+              Job <code>{job.jobId}</code> - <Link to={`/jobs/${job.jobId}`}>View Details</Link>
             </div>
           </div>
           <StatusPill status={job.status} />
@@ -156,14 +168,14 @@ export default function JobStatus({ jobId, pollMs = 2000, onDone }) {
           </div>
         )}
 
-        <style jsx="true">{`
+        <style>{`
           .job-card {
             padding: 16px;
             border-radius: 12px;
             border: 1px solid #e5e7eb;
             margin-top: 16px;
             background: #f9fafb;
-            color: #111827; /* ensure readable text on light card */
+            color: #111827;
           }
           .job-card-header {
             display: flex;
@@ -247,7 +259,7 @@ export default function JobStatus({ jobId, pollMs = 2000, onDone }) {
             font-weight: 600;
             font-size: 13px;
             background: #ffffff;
-            color: #111827; /* ensure text is visible on white */
+            color: #111827;
           }
           .pill-button:disabled {
             opacity: 0.6;
@@ -283,8 +295,12 @@ export default function JobStatus({ jobId, pollMs = 2000, onDone }) {
   );
 }
 
-function StatusPill({ status }) {
-  const colors = {
+interface StatusPillProps {
+  status: Job["status"];
+}
+
+function StatusPill({ status }: StatusPillProps) {
+  const colors: Record<Job["status"], string> = {
     PENDING: "#9ca3af",
     PROCESSING: "#fbbf24",
     COMPLETED: "#22c55e",
@@ -306,7 +322,7 @@ function StatusPill({ status }) {
   );
 }
 
-function statusToProgress(status) {
+function statusToProgress(status: Job["status"]): ProgressInfo {
   switch (status) {
     case "PENDING":
       return { percent: 0.25, text: "Queued" };

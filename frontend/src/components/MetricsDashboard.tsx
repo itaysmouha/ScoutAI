@@ -1,9 +1,13 @@
-// frontend/src/components/MetricsDashboard.jsx
 import { useEffect, useState } from "react";
 import { getJobMetrics } from "../api";
+import type { Metrics } from "../types";
 
-export default function MetricsDashboard({ jobId }) {
-  const [metrics, setMetrics] = useState(null);
+interface MetricsDashboardProps {
+  jobId: string;
+}
+
+export default function MetricsDashboard({ jobId }: MetricsDashboardProps) {
+  const [metrics, setMetrics] = useState<Metrics | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -20,7 +24,7 @@ export default function MetricsDashboard({ jobId }) {
         if (cancelled) return;
         setMetrics(res.metrics);
       } catch (e) {
-        if (!cancelled) setError(e.message || "Failed to load metrics");
+        if (!cancelled) setError((e as Error).message || "Failed to load metrics");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -100,7 +104,7 @@ export default function MetricsDashboard({ jobId }) {
                   key={idx}
                   style={{
                     padding: "4px 0",
-                    borderBottom: idx < metrics.topPlayers.length - 1 ? "1px solid #333" : "none",
+                    borderBottom: idx < metrics.topPlayers!.length - 1 ? "1px solid #333" : "none",
                   }}
                 >
                   <strong>{p.name}</strong>
@@ -133,7 +137,12 @@ export default function MetricsDashboard({ jobId }) {
   );
 }
 
-function Card({ title, children }) {
+interface CardProps {
+  title: string;
+  children: React.ReactNode;
+}
+
+function Card({ title, children }: CardProps) {
   return (
     <div
       style={{
@@ -149,7 +158,12 @@ function Card({ title, children }) {
   );
 }
 
-function MetricRow({ label, value }) {
+interface MetricRowProps {
+  label: string;
+  value?: number | string;
+}
+
+function MetricRow({ label, value }: MetricRowProps) {
   if (value === undefined || value === null) return null;
   return (
     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>

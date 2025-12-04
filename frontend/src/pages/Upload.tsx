@@ -1,11 +1,11 @@
-// src/pages/Upload.jsx
 import { useRef, useState } from "react";
-import { getPresignedUploadUrl, createJob } from "../api.js";
-import JobStatus from "../components/JobStatus.jsx";
+import { getPresignedUploadUrl, createJob } from "../api";
+import JobStatus from "../components/JobStatus";
+import type { Job } from "../types";
 
 export default function Upload() {
-  const fileInputRef = useRef(null);
-  const [selectedFile, setSelectedFile] = useState(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
   const [jobId, setJobId] = useState("");
@@ -55,7 +55,7 @@ export default function Upload() {
       }
       setSelectedFile(null);
     } catch (e) {
-      setMessage(`Error: ${e?.message || String(e)}`);
+      setMessage(`Error: ${(e as Error)?.message || String(e)}`);
     } finally {
       setUploading(false);
     }
@@ -137,11 +137,11 @@ export default function Upload() {
       <section className="status-panel">
         <h2 className="status-title">Analysis status</h2>
         <p className="status-subtitle">
-          Once you upload a clip, you’ll see the live analysis progress and metrics here.
+          Once you upload a clip, you'll see the live analysis progress and metrics here.
         </p>
 
         {hasJob ? (
-          <JobStatus jobId={jobId} onDone={(job) => console.log("Job finished:", job)} />
+          <JobStatus jobId={jobId} onDone={(job: Job) => console.log("Job finished:", job)} />
         ) : (
           <div className="status-placeholder">
             <div className="placeholder-icon">📊</div>
@@ -152,7 +152,7 @@ export default function Upload() {
         )}
       </section>
 
-      <style jsx="true">{`
+      <style>{`
         .upload-layout {
           display: grid;
           grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
@@ -343,7 +343,11 @@ export default function Upload() {
   );
 }
 
-function Spinner({ label = "Loading…" }) {
+interface SpinnerProps {
+  label?: string;
+}
+
+function Spinner({ label = "Loading…" }: SpinnerProps) {
   return (
     <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 8 }}>
       <div
@@ -357,7 +361,7 @@ function Spinner({ label = "Loading…" }) {
         }}
       />
       <span style={{ fontSize: 12 }}>{label}</span>
-      <style jsx="true">{`
+      <style>{`
         @keyframes spin {
           to {
             transform: rotate(360deg);

@@ -90,13 +90,13 @@ def process(job):
     },
     "teams": {
         "home": {
-            "name": "Home FC",
+            "name": "Home Team",
             "shots": 5,
             "xg": 0.9,
             "possessionPercent": 54
         },
         "away": {
-            "name": "Away United",
+            "name": "Away Team",
             "shots": 3,
             "xg": 0.6,
             "possessionPercent": 46
