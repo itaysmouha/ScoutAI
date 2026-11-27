@@ -1,5 +1,6 @@
 import os, json, boto3
 from datetime import datetime, timezone
+from botocore.config import Config
 from botocore.exceptions import ClientError
 from fastapi import APIRouter, HTTPException
 from typing import List, Optional
@@ -20,7 +21,8 @@ SQS_URL    = os.environ["SQS_JOBS_URL"]
 # -----------------------------------------------------------------------------
 sqs = boto3.client("sqs", region_name=REGION)
 ddb = boto3.resource("dynamodb", region_name=REGION).Table(JOBS_TABLE)
-s3  = boto3.client("s3", region_name=REGION)   # used for metrics + output from S3
+s3  = boto3.client("s3", region_name=REGION,   # used for metrics + output from S3
+                   config=Config(s3={"addressing_style": "virtual"}))  # regional presigned URLs, see uploads.py
 
 
 def now_iso():

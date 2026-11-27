@@ -1,4 +1,5 @@
 import boto3, os,uuid
+from botocore.config import Config
 from fastapi import APIRouter, HTTPException
 from ..models.schema import PresignedRequest, PresignedResponse
 
@@ -7,7 +8,8 @@ REGION = os.getenv("AWS_REGION", "eu-central-1")
 BUCKET = os.environ["S3_BUCKET"]      
 PRESIGN_TTL = int(os.getenv("PRESIGN_TTL", "900"))  
 
-s3 = boto3.client("s3", region_name=REGION)
+# Virtual addressing makes presigned URLs use the regional endpoint; the global one 307-redirects for new buckets
+s3 = boto3.client("s3", region_name=REGION, config=Config(s3={"addressing_style": "virtual"}))
 
 router = APIRouter(prefix="/upload-url", tags=["uploads"])
 
