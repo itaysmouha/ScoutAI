@@ -1,2 +1,7 @@
 __pycache__/
 *.pyc
+
+# Terraform (local state holds resource details; never commit it)
+infra/.terraform/
+*.tfstate
+*.tfstate.*
