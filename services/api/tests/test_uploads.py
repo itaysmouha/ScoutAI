@@ -1,5 +1,18 @@
 import re
 
+import pytest
+
+
+@pytest.mark.parametrize("content_type, ext", [("video/quicktime", ".mov"), ("video/webm", ".webm")])
+def test_presign_key_extension_follows_content_type(client, content_type, ext):
+    res = client.post("/upload-url", json={"content_type": content_type})
+
+    assert res.json()["key"].endswith(ext)
+
+
+def test_presign_rejects_non_video_content_type(client):
+    assert client.post("/upload-url", json={"content_type": "image/png"}).status_code == 400
+
 
 def test_presign_returns_regional_put_url_for_new_upload_key(client):
     res = client.post("/upload-url", json={})

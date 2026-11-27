@@ -118,6 +118,9 @@ def list_jobs(userId: Optional[str] = Query(default=None, alias="userId")):
     try:
         resp = ddb.scan()
         items = resp.get("Items", [])
+        while "LastEvaluatedKey" in resp:  # a scan returns at most 1 MB per call
+            resp = ddb.scan(ExclusiveStartKey=resp["LastEvaluatedKey"])
+            items.extend(resp.get("Items", []))
 
         if userId:
             items = [item for item in items if item.get("userId") == userId]

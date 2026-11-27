@@ -19,6 +19,23 @@ jobs:
       - run: ruff check .
       - run: pytest
 
+  # The worker has its own requirements: install only those on a clean Python
+  # and import it, so a missing dependency fails here instead of at runtime.
+  worker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r services/worker/requirements.txt
+      - run: python -c "import worker"
+        working-directory: services/worker
+        env:
+          S3_BUCKET: test
+          JOBS_TABLE: test
+          SQS_JOBS_URL: https://sqs.eu-central-1.amazonaws.com/123456789012/test
+
   frontend:
     runs-on: ubuntu-latest
     defaults:

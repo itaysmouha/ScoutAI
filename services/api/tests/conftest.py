@@ -17,6 +17,7 @@ os.environ.update(
     S3_BUCKET="test-bucket",
     JOBS_TABLE="test-jobs",
     SQS_JOBS_URL=f"https://sqs.{REGION}.amazonaws.com/123456789012/test-jobs",
+    CORS_ORIGINS="http://allowed.example,http://also-allowed.example",
 )
 
 

@@ -5,6 +5,7 @@ VENV := .venv
 install:
 	python3 -m venv $(VENV)
 	$(VENV)/bin/pip install -q -r services/api/requirements.txt
+	$(VENV)/bin/pip install -q -r services/worker/requirements.txt
 	cd frontend && npm install
 
 api:
