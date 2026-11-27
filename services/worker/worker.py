@@ -7,7 +7,9 @@
 # and updates DynamoDB to mark the job as completed.
 # -----------------------------------------------------------
 
-import os, json, time
+import os
+import json
+import time
 from datetime import datetime, timezone
 
 import boto3

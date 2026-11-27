@@ -1,4 +1,6 @@
-import os, json, boto3
+import os
+import json
+import boto3
 from datetime import datetime, timezone
 from botocore.config import Config
 from botocore.exceptions import ClientError
