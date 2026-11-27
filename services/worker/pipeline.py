@@ -14,6 +14,8 @@ For now it just returns dummy metrics + a placeholder output.
 from datetime import datetime, timezone
 from typing import Dict, Tuple
 
+from metrics_schema import Metrics
+
 
 def now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -43,7 +45,7 @@ def run_yolo_pipeline_stub(
     # 3. Generate metrics + annotated video
     # 4. Return (metrics_dict, annotated_video_bytes)
 
-    metrics = {
+    metrics = Metrics.model_validate({
         "jobId": job_id,
         "generatedAt": now_iso(),
         "summary": {
@@ -79,7 +81,7 @@ def run_yolo_pipeline_stub(
                 "touches": 18,
             },
         ],
-    }
+    }).model_dump(exclude_none=True)  # omit unset fields, as the frontend's optional types expect
 
     # For now just a text placeholder; later this will be actual video bytes
     output_bytes = f"Placeholder output for job {job_id}\nInput: s3://{s3_bucket}/{s3_key_input}\n".encode(

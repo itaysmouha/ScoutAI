@@ -47,11 +47,14 @@ export interface PlayerMetrics {
   touches?: number;
 }
 
+// Mirrors services/worker/metrics_schema.py (the worker omits unset optional fields)
 export interface Metrics {
+  schemaVersion: 1;
+  jobId: string;
+  generatedAt: string;
   summary?: MetricsSummary;
   teams?: TeamsMetrics;
   topPlayers?: PlayerMetrics[];
-  [key: string]: unknown; // Allow additional properties
 }
 
 export interface JobMetricsResponse {
