@@ -51,7 +51,7 @@ export interface Metrics {
   summary?: MetricsSummary;
   teams?: TeamsMetrics;
   topPlayers?: PlayerMetrics[];
-  [key: string]: any; // Allow additional properties
+  [key: string]: unknown; // Allow additional properties
 }
 
 export interface JobMetricsResponse {
