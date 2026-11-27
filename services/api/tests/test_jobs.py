@@ -37,6 +37,17 @@ def test_list_jobs_filters_by_user_newest_first(client, aws):
     assert [j["jobId"] for j in res.json()] == ["job-new", "job-old"]
 
 
+def test_list_jobs_pages_through_scan(client, aws, monkeypatch):
+    from services.api.routers import jobs
+
+    for i in range(3):
+        put_job(aws, f"job-{i}")
+    scan = jobs.ddb.scan
+    monkeypatch.setattr(jobs.ddb, "scan", lambda **kw: scan(Limit=1, **kw))  # one item per page
+
+    assert len(client.get("/jobs").json()) == 3
+
+
 def test_get_job(client, aws):
     put_job(aws)
 
